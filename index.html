@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>Meadow House Repairs</title>
+  <style>
+    :root {
+      --bg-slate: #0f172a;
+      --card-bg: #ffffff;
+      --panel-bg: #f8fafc;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #cbd5e1;
+      
+      --accent-blue: #2563eb;
+      --accent-indigo: #4f46e5;
+
+      --urgent-main: #991b1b;
+      --urgent-bg: #ffe4e6;
+      --urgent-border: #f43f5e;
+
+      --normal-main: #1e293b;
+      --normal-bg: #e2e8f0;
+      --normal-border: #94a3b8;
+
+      --status-new-bg: #e0e7ff;
+      --status-new-text: #3730a3;
+
+      --status-progress-bg: #fef3c7;
+      --status-progress-text: #92400e;
+
+      --status-completed-bg: #d1fae5;
+      --status-completed-text: #065f46;
+
+      --error-main: #991b1b;
+      --error-bg: #fef2f2;
+      --error-border: #fca5a5;
+
+      --success-main: #166534;
+      --success-bg: #f0fdf4;
+      --success-border: #86efac;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--text-main);
+      background-color: #f1f5f9;
+      padding-bottom: 30px;
+      min-height: 100vh;
+    }
+
+    /* Keyframe Animations */
+    @keyframes slideIn {
+      0% {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.97);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @keyframes popIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.92);
+      }
+      50% {
+        transform: scale(1.02);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    header {
+      background-color: var(--bg-slate);
+      color: #ffffff;
+      padding: 16px 20px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    .header-content {
+      max-width: 1300px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #94a3b8;
+    }
+
+    .view-switcher {
+      display: flex;
+      background: #1e293b;
+      padding: 4px;
+      border-radius: 8px;
+      gap: 4px;
+    }
+
+    .view-btn {
+      background: transparent;
+      color: #94a3b8;
+      border: none;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .view-btn.active {
+      background: var(--accent-blue);
+      color: #ffffff;
+    }
+
+    .container {
+      max-width: 1300px;
+      margin: 20px auto 0 auto;
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    @media (min-width: 900px) {
+      .container {
+        display: grid;
+        grid-template-columns: 340px 1fr;
+        align-items: start;
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      padding: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    @media (min-width: 900px) {
+      .sticky-card {
+        position: sticky;
+        top: 20px;
+      }
+    }
+
+    h2 {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      color: var(--text-main);
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+
+    input[type="text"],
+    textarea,
+    select {
+      width: 100%;
+      min-height: 42px;
+      padding: 10px 12px;
+      font-size: 14px;
+      color: var(--text-main);
+      border: 1.5px solid var(--border-color);
+      border-radius: 8px;
+      background-color: #fff;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    select {
+      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%22%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%232563eb%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px top 50%;
+      background-size: 12px auto;
+      padding-right: 32px;
+    }
+
+    textarea {
+      min-height: 75px;
+      resize: vertical;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus,
+    button:focus {
+      outline: none;
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.25);
+    }
+
+    .static-field {
+      padding: 10px 12px;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      background-color: #f1f5f9;
+      border: 1.5px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      background-color: var(--accent-blue);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 700;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.15s ease, transform 0.1s ease;
+      width: 100%;
+    }
+
+    button:hover {
+      background-color: var(--accent-indigo);
+    }
+
+    button:active {
+      transform: scale(0.96);
+    }
+
+    /* Alerts with entrance animation */
+    .alert {
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 14px;
+      display: none;
+      font-weight: 600;
+      word-break: break-word;
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    .alert-error {
+      background-color: var(--error-bg);
+      color: var(--error-main);
+      border: 1.5px solid var(--error-border);
+    }
+
+    .alert-success {
+      background-color: var(--success-bg);
+      color: var(--success-main);
+      border: 1.5px solid var(--success-border);
+    }
+
+    .kanban-board {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (min-width: 900px) {
+      .kanban-board {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .kanban-col {
+      background-color: var(--panel-bg);
+      border: 1.5px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .col-header {
+      font-size: 14px;
+      font-weight: 800;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border-color);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .col-count {
+      background-color: #cbd5e1;
+      color: #0f172a;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 11px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    .badge-urgent {
+      background-color: var(--urgent-bg);
+      color: var(--urgent-main);
+      border: 1px solid var(--urgent-border);
+    }
+
+    .badge-normal {
+      background-color: var(--normal-bg);
+      color: var(--normal-main);
+      border: 1px solid var(--normal-border);
+    }
+
+    /* Job Card Animated Entrance */
+    .job-card {
+      border: 1.5px solid var(--border-color);
+      border-radius: 8px;
+      padding: 14px;
+      background: #ffffff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .job-card.newly-created {
+      animation: slideIn 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .job-card:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .job-card.is-urgent {
+      border-color: var(--urgent-border);
+      background-color: #fff8f8;
+    }
+
+    .job-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text-main);
+      word-break: break-word;
+      margin-bottom: 4px;
+    }
+
+    .job-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+
+    .job-description {
+      font-size: 13px;
+      margin-bottom: 10px;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      white-space: pre-wrap;
+      color: var(--text-main);
+      background-color: #f1f5f9;
+      padding: 8px 10px;
+      border-radius: 6px;
+    }
+
+    .latest-note {
+      background-color: #eff6ff;
+      padding: 8px 10px;
+      border-left: 3px solid var(--accent-blue);
+      border-radius: 0 6px 6px 0;
+      font-size: 12px;
+      margin-bottom: 10px;
+      overflow-wrap: break-word;
+      word-break: break-word;
+      white-space: pre-wrap;
+      color: #1e40af;
+    }
+
+    details {
+      margin-top: 6px;
+      font-size: 12px;
+    }
+
+    summary {
+      cursor: pointer;
+      color: var(--accent-blue);
+      font-weight: 700;
+      user-select: none;
+    }
+
+    .history-list {
+      list-style: none;
+      margin-top: 6px;
+      padding-left: 8px;
+      border-left: 2px solid var(--border-color);
+    }
+
+    .history-item {
+      margin-bottom: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+      overflow-wrap: break-word;
+    }
+
+    .history-item strong {
+      color: var(--text-main);
+    }
+
+    .update-panel {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed var(--border-color);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 20px 10px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header-content">
+      <div>
+        <h1>Meadow House Repairs</h1>
+        <p class="subtitle">Fault Reporting & Maintenance Tracking System</p>
+      </div>
+
+      <nav class="view-switcher" aria-label="View Modes">
+        <button type="button" id="btn-kanban" class="view-btn active" onclick="setViewMode('kanban')">Kanban Board</button>
+        <button type="button" id="btn-active" class="view-btn" onclick="setViewMode('active')">Active Folder</button>
+        <button type="button" id="btn-completed" class="view-btn" onclick="setViewMode('completed')">Completed Archive</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card sticky-card" aria-labelledby="report-heading">
+      <h2 id="report-heading">Report a Fault</h2>
+      
+      <div id="form-alert" class="alert" role="alert" aria-live="assertive"></div>
+
+      <form id="report-form" novalidate>
+        <div class="form-group">
+          <label for="home-name">Property Name</label>
+          <div id="home-name" class="static-field">Meadow House</div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Fault Description *</label>
+          <textarea id="description" name="description" rows="3" required aria-required="true" placeholder="Describe the fault clearly..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="reporter">Reporter Name *</label>
+          <input type="text" id="reporter" name="reporter" required aria-required="true" placeholder="e.g. Alex Morgan">
+        </div>
+
+        <div class="form-group">
+          <label for="priority">Priority Level *</label>
+          <select id="priority" name="priority" required aria-required="true">
+            <option value="Normal">Normal</option>
+            <option value="Urgent">Urgent</option>
+          </select>
+        </div>
+
+        <button type="submit" id="submit-report-btn">Submit Report</button>
+      </form>
+    </section>
+
+    <section class="card" aria-labelledby="track-heading">
+      <h2 id="track-heading">Maintenance Dashboard</h2>
+
+      <div id="track-alert" class="alert" role="alert" aria-live="polite"></div>
+
+      <div id="board-container">
+        <!-- Rendered dynamically -->
+      </div>
+    </section>
+  </main>
+
+  <script>
+    let currentViewMode = 'kanban';
+    let newlySubmittedJobId = null;
+
+    (function () {
+      const STORAGE_KEY = 'meadow_house_repairs_data';
+
+      let jobs = [];
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          jobs = JSON.parse(saved);
+        }
+      } catch (e) {
+        console.error('Failed to load jobs from localStorage', e);
+      }
+
+      const reportForm = document.getElementById('report-form');
+      const formAlert = document.getElementById('form-alert');
+      const trackAlert = document.getElementById('track-alert');
+      const boardContainer = document.getElementById('board-container');
+
+      function saveJobs() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(jobs));
+        } catch (e) {
+          console.error('Failed to save to localStorage', e);
+        }
+      }
+
+      function showAlert(container, message, type = 'error') {
+        container.textContent = message;
+        container.className = `alert alert-${type}`;
+        container.style.display = 'block';
+      }
+
+      function clearAlert(container) {
+        container.textContent = '';
+        container.style.display = 'none';
+      }
+
+      function formatTimestamp(dateObj) {
+        const d = dateObj || new Date();
+        return d.toLocaleString('en-GB', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit'
+        });
+      }
+
+      window.setViewMode = function(mode) {
+        currentViewMode = mode;
+        document.getElementById('btn-kanban').classList.toggle('active', mode === 'kanban');
+        document.getElementById('btn-active').classList.toggle('active', mode === 'active');
+        document.getElementById('btn-completed').classList.toggle('active', mode === 'completed');
+        renderDashboard();
+      };
+
+      reportForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        clearAlert(formAlert);
+
+        const descriptionInput = document.getElementById('description');
+        const reporterInput = document.getElementById('reporter');
+        const priorityInput = document.getElementById('priority');
+
+        const rawDescription = descriptionInput.value;
+        const rawReporter = reporterInput.value;
+        const priority = priorityInput.value;
+
+        if (!rawDescription || rawDescription.trim().length === 0) {
+          showAlert(formAlert, 'Error: Description cannot be empty or contain only spaces.');
+          descriptionInput.focus();
+          return;
+        }
+
+        if (!rawReporter || rawReporter.trim().length === 0) {
+          showAlert(formAlert, 'Error: Reporter name cannot be empty or contain only spaces.');
+          reporterInput.focus();
+          return;
+        }
+
+        const now = new Date();
+        const timestampMs = now.getTime();
+        const newJob = {
+          id: 'JOB-' + timestampMs.toString().slice(-6),
+          home: 'Meadow House',
+          description: rawDescription,
+          reporter: rawReporter,
+          priority: priority,
+          status: 'New',
+          createdAt: timestampMs,
+          createdDate: formatTimestamp(now),
+          latestNote: '',
+          history: [
+            {
+              timestamp: formatTimestamp(now),
+              status: 'New',
+              note: 'Report created.'
+            }
+          ]
+        };
+
+        newlySubmittedJobId = newJob.id;
+        jobs.push(newJob);
+        saveJobs();
+
+        descriptionInput.value = '';
+        reporterInput.value = '';
+        priorityInput.value = 'Normal';
+
+        showAlert(formAlert, `Report submitted successfully! Job ID: ${newJob.id}`, 'success');
+        renderDashboard();
+      });
+
+      function handleUpdateJob(jobId) {
+        clearAlert(trackAlert);
+        const job = jobs.find(j => j.id === jobId);
+        if (!job) return;
+
+        const statusSelect = document.getElementById(`status-select-${jobId}`);
+        const noteInput = document.getElementById(`note-input-${jobId}`);
+
+        const newStatus = statusSelect.value;
+        const rawNote = noteInput.value;
+
+        if (newStatus === 'Completed' && (!rawNote || rawNote.trim().length === 0)) {
+          showAlert(trackAlert, `Error updating ${job.id}: A non-empty note is required when marking a job as Completed.`);
+          noteInput.focus();
+          return;
+        }
+
+        const trimmedNote = rawNote ? rawNote.trim() : '';
+        const nowFormatted = formatTimestamp(new Date());
+
+        job.status = newStatus;
+        if (trimmedNote) {
+          job.latestNote = trimmedNote;
+        }
+
+        job.history.push({
+          timestamp: nowFormatted,
+          status: newStatus,
+          note: trimmedNote || 'Status changed.'
+        });
+
+        saveJobs();
+        showAlert(trackAlert, `Job ${job.id} updated successfully to "${newStatus}".`, 'success');
+        renderDashboard();
+      }
+
+      function createJobCardElement(job) {
+        const div = document.createElement('div');
+        const isNewArrival = newlySubmittedJobId === job.id;
+        
+        div.className = `job-card ${job.priority === 'Urgent' ? 'is-urgent' : ''} ${isNewArrival ? 'newly-created' : ''}`;
+        div.setAttribute('aria-labelledby', `job-title-${job.id}`);
+
+        const title = document.createElement('div');
+        title.className = 'job-title';
+        title.id = `job-title-${job.id}`;
+        title.textContent = `${job.id} — ${job.home}`;
+
+        const priorityBadge = document.createElement('span');
+        priorityBadge.className = `badge ${job.priority === 'Urgent' ? 'badge-urgent' : 'badge-normal'}`;
+        priorityBadge.textContent = `Priority: ${job.priority}`;
+        priorityBadge.style.marginBottom = '8px';
+
+        const meta = document.createElement('div');
+        meta.className = 'job-meta';
+        meta.textContent = `Reported by ${job.reporter} on ${job.createdDate}`;
+
+        const desc = document.createElement('div');
+        desc.className = 'job-description';
+        desc.textContent = job.description;
+
+        div.appendChild(title);
+        div.appendChild(priorityBadge);
+        div.appendChild(meta);
+        div.appendChild(desc);
+
+        if (job.latestNote) {
+          const noteBox = document.createElement('div');
+          noteBox.className = 'latest-note';
+          const noteLabel = document.createElement('strong');
+          noteLabel.textContent = 'Latest Note: ';
+          noteBox.appendChild(noteLabel);
+          noteBox.appendChild(document.createTextNode(job.latestNote));
+          div.appendChild(noteBox);
+        }
+
+        const details = document.createElement('details');
+        const summary = document.createElement('summary');
+        summary.textContent = `History (${job.history.length})`;
+        details.appendChild(summary);
+
+        const historyUl = document.createElement('ul');
+        historyUl.className = 'history-list';
+
+        [...job.history].reverse().forEach(item => {
+          const hLi = document.createElement('li');
+          hLi.className = 'history-item';
+          
+          const timeSpan = document.createElement('strong');
+          timeSpan.textContent = `[${item.timestamp}] ${item.status}: `;
+          
+          hLi.appendChild(timeSpan);
+          hLi.appendChild(document.createTextNode(item.note));
+          historyUl.appendChild(hLi);
+        });
+
+        details.appendChild(historyUl);
+        div.appendChild(details);
+
+        const updatePanel = document.createElement('div');
+        updatePanel.className = 'update-panel';
+
+        const updateForm = document.createElement('form');
+        updateForm.onsubmit = function (e) {
+          e.preventDefault();
+          handleUpdateJob(job.id);
+        };
+
+        const statusGroup = document.createElement('div');
+        statusGroup.className = 'form-group';
+        
+        const statusLabel = document.createElement('label');
+        statusLabel.htmlFor = `status-select-${job.id}`;
+        statusLabel.textContent = 'Change Status';
+        
+        const statusSelect = document.createElement('select');
+        statusSelect.id = `status-select-${job.id}`;
+        statusSelect.setAttribute('aria-label', `Update status for job ${job.id}`);
+        
+        ['New', 'In Progress', 'Completed'].forEach(st => {
+          const opt = document.createElement('option');
+          opt.value = st;
+          opt.textContent = st;
+          if (job.status === st) opt.selected = true;
+          statusSelect.appendChild(opt);
+        });
+
+        statusGroup.appendChild(statusLabel);
+        statusGroup.appendChild(statusSelect);
+
+        const noteGroup = document.createElement('div');
+        noteGroup.className = 'form-group';
+
+        const noteLabel = document.createElement('label');
+        noteLabel.htmlFor = `note-input-${job.id}`;
+        noteLabel.textContent = 'Progress / Completion Note';
+
+        const noteInput = document.createElement('textarea');
+        noteInput.id = `note-input-${job.id}`;
+        noteInput.rows = 2;
+        noteInput.placeholder = 'Enter progress details or required completion note...';
+        noteInput.setAttribute('aria-label', `Progress or completion note for job ${job.id}`);
+
+        noteGroup.appendChild(noteLabel);
+        noteGroup.appendChild(noteInput);
+
+        const saveBtn = document.createElement('button');
+        saveBtn.type = 'submit';
+        saveBtn.textContent = 'Save Update';
+
+        updateForm.appendChild(statusGroup);
+        updateForm.appendChild(noteGroup);
+        updateForm.appendChild(saveBtn);
+
+        updatePanel.appendChild(updateForm);
+        div.appendChild(updatePanel);
+
+        return div;
+      }
+
+      function renderDashboard() {
+        boardContainer.innerHTML = '';
+
+        if (jobs.length === 0) {
+          boardContainer.innerHTML = '<div class="empty-state"><p>No maintenance jobs reported yet.</p></div>';
+          return;
+        }
+
+        const sortJobs = (list) => {
+          return [...list].sort((a, b) => {
+            if (a.priority === 'Urgent' && b.priority !== 'Urgent') return -1;
+            if (a.priority !== 'Urgent' && b.priority === 'Urgent') return 1;
+            return (a.createdAt || 0) - (b.createdAt || 0);
+          });
+        };
+
+        if (currentViewMode === 'kanban') {
+          const board = document.createElement('div');
+          board.className = 'kanban-board';
+
+          const statuses = ['New', 'In Progress', 'Completed'];
+
+          statuses.forEach(st => {
+            const col = document.createElement('div');
+            col.className = 'kanban-col';
+
+            const filtered = sortJobs(jobs.filter(j => j.status === st));
+
+            const colHeader = document.createElement('div');
+            colHeader.className = 'col-header';
+            colHeader.innerHTML = `<span>${st}</span> <span class="col-count">${filtered.length}</span>`;
+
+            col.appendChild(colHeader);
+
+            if (filtered.length === 0) {
+              col.innerHTML += `<div class="empty-state"><p>No ${st.toLowerCase()} jobs</p></div>`;
+            } else {
+              filtered.forEach(job => {
+                col.appendChild(createJobCardElement(job));
+              });
+            }
+
+            board.appendChild(col);
+          });
+
+          boardContainer.appendChild(board);
+        } else {
+          const filtered = sortJobs(jobs.filter(j => {
+            if (currentViewMode === 'completed') return j.status === 'Completed';
+            return j.status !== 'Completed';
+          }));
+
+          if (filtered.length === 0) {
+            const label = currentViewMode === 'completed' ? 'Completed Archive' : 'Active Folder';
+            boardContainer.innerHTML = `<div class="empty-state"><p>No jobs in ${label}.</p></div>`;
+            return;
+          }
+
+          const wrapper = document.createElement('div');
+          wrapper.style.display = 'flex';
+          wrapper.style.flexDirection = 'column';
+          wrapper.style.gap = '14px';
+
+          filtered.forEach(job => {
+            wrapper.appendChild(createJobCardElement(job));
+          });
+
+          boardContainer.appendChild(wrapper);
+        }
+
+        // Reset tracking ID after rendering animation once
+        newlySubmittedJobId = null;
+      }
+
+      renderDashboard();
+    })();
+  </script>
+</body>
+</html>
