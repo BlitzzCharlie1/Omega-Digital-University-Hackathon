@@ -1,2 +1,2 @@
-# Omega-Digital-University-Hackatho
+# Omega-Digital-University-Hackathon
 Meadow House Repairs solution
